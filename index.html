@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+	<head>
+		<title>AGL Assessment Programming</title>
+	</head>
+	<body>
+		<div ng-app="myApp" ng-controller="myCtrl">
+			<div class="systemError">{{systemError}}</div>
+			<h1>{{maleHeading}}</h1>
+			<ul>
+				<li ng-repeat="catName in allMalePeoples">{{catName}}</li>
+			</ul>
+			<h1>{{femaleHeading}}</h1>
+			<ul>
+				<li ng-repeat="catName in allFemalePeoples">{{catName}}</li>
+			</ul>
+		</div>
+		<script src="./js/libs/lodash.js"></script>
+		<script src="./js/libs/angular.min.js"></script>
+		<script src="./js/app.js"></script>
+		
+	</body>
+</html>
