@@ -31,55 +31,41 @@ app.controller('myCtrl', function ($scope, $http) {
 		$scope.systemError = '';
 	}
 	$http.get(AGL.URL.JSON_FILES_PEOPLE).then(function (response) {
-		var allMalePeoples, allFemalePeoples, data, peoples;
+		var data, petType, peoplesByGender, catNamesByGender;
 		
 		if (response && response.data && response.data !== '') {
-			allMalePeoples = [];
-			allFemalePeoples = [];
 			data = response.data;
-			peoples = _.groupBy(data, function (people){
-				return people.gender;
+			petType = AGL.PETS.CAT;
+			peoplesByGender = _.groupBy(data, function (person) {
+				return person.gender;
 			});
-			
-			if (peoples && peoples !== undefined) {
-				_.each(peoples, function (value, key) {
-					var gender, persons;
-					gender = key;
-					persons = value;
-					if (persons && persons.length > 0) {
-						_.each(persons, function (person) {
-							var pets;
-							pets = person.pets;
-							if (pets && pets.length > 0) {
-								_.each(pets, function (pet) {
-									var petName;
-									if (pet.type.toUpperCase() === AGL.PETS.CAT) {
-										petName = pet.name;
-										if (gender.toUpperCase() === AGL.GENDER.MALE) {
-											allMalePeoples.push(petName);
-										} else {
-											allFemalePeoples.push(petName);
-										}
-									}
-								});
-							}
-						});
-					}
-				});
-			}
-			
-			if (allMalePeoples.length > 0) {
-				$scope.maleHeading = AGL.LABELS.HEADING_MALE;
-				$scope.allMalePeoples = _.sortBy(allMalePeoples);
-			}
-			
-			if (allFemalePeoples.length > 0) {
-				$scope.femaleHeading = AGL.LABELS.HEADING_FEMALE;
-				$scope.allFemalePeoples = _.sortBy(allFemalePeoples);
-			}
+			catNamesByGender = getCatNamesByGender(peoplesByGender, petType);
+			$scope.catNamesByGender = catNamesByGender;
 		}
 	}, function (response) {
 		$scope.systemError = AGL.ERROR_MESSAGES.SYSTEM_ERROR;
 	});
 });
 
+function getCatNamesByGender(peoples, petType) {
+	var catNames = {};
+	if (peoples) {
+		_.each(peoples, function (value, gender) {
+			var gender, petNames;
+			gender = gender;
+			petNames = [];
+			_.each(value, function (person) {
+				var pets = person.pets;
+				if (pets && pets.length > 0) {
+					_.each(pets, function (pet) {
+						if (pet.type.toUpperCase() === petType) {
+							petNames.push(pet.name);
+						}
+					});
+				}
+			});
+			catNames[gender] = _.sortBy(petNames);
+		});
+	}
+	return catNames;
+}
